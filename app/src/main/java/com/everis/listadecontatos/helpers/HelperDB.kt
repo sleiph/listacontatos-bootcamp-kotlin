@@ -11,16 +11,16 @@ class HelperDB(
 ) : SQLiteOpenHelper(context, NOME_BANCO, null, VERSAO_ATUAL) {
 
     companion object {
-        private val NOME_BANCO = "contato.db"
-        private val VERSAO_ATUAL = 2
+        private const val NOME_BANCO = "contato.db"
+        private const val VERSAO_ATUAL = 2
     }
 
-    val TABLE_NAME = "contato"
-    val COLUMNS_ID = "id"
-    val COLUMNS_NOME = "nome"
-    val COLUMNS_TELEFONE = "telefone"
-    val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
-    val CREATE_TABLE = "CREATE TABLE $TABLE_NAME (" +
+    private val TABLE_NAME = "contato"
+    private val COLUMNS_ID = "id"
+    private val COLUMNS_NOME = "nome"
+    private val COLUMNS_TELEFONE = "telefone"
+    private val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
+    private val CREATE_TABLE = "CREATE TABLE $TABLE_NAME (" +
             "$COLUMNS_ID INTEGER NOT NULL," +
             "$COLUMNS_NOME TEXT NOT NULL," +
             "$COLUMNS_TELEFONE TEXT NOT NULL," +
@@ -41,23 +41,23 @@ class HelperDB(
 
     fun buscarContatos(busca: String, isBuscaPorID: Boolean = false) : List<ContatosVO> {
         val db = readableDatabase ?: return mutableListOf()
-        var lista = mutableListOf<ContatosVO>()
-        var where: String? = null
-        var args: Array<String> = arrayOf()
+        val lista = mutableListOf<ContatosVO>()
+        val where: String?
+        val args: Array<String>
         if(isBuscaPorID){
             where = "$COLUMNS_ID = ?"
-            args = arrayOf("$busca")
+            args = arrayOf(busca)
         }else{
             where = "$COLUMNS_NOME LIKE ?"
             args = arrayOf("%$busca%")
         }
-        var cursor = db.query(TABLE_NAME,null,where,args,null,null,null)
+        val cursor = db.query(TABLE_NAME,null,where,args,null,null,null)
         if (cursor == null){
             db.close()
             return mutableListOf()
         }
         while(cursor.moveToNext()){
-            var contato = ContatosVO(
+            val contato = ContatosVO(
                 cursor.getInt(cursor.getColumnIndex(COLUMNS_ID)),
                 cursor.getString(cursor.getColumnIndex(COLUMNS_NOME)),
                 cursor.getString(cursor.getColumnIndex(COLUMNS_TELEFONE))
@@ -70,7 +70,7 @@ class HelperDB(
 
     fun salvarContato(contato: ContatosVO) {
         val db = writableDatabase ?: return
-        var content = ContentValues()
+        val content = ContentValues()
         content.put(COLUMNS_NOME,contato.nome)
         content.put(COLUMNS_TELEFONE,contato.telefone)
         db.insert(TABLE_NAME,null,content)

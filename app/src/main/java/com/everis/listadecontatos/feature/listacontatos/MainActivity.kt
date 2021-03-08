@@ -11,7 +11,6 @@ import com.everis.listadecontatos.bases.BaseActivity
 import com.everis.listadecontatos.feature.contato.ContatoActivity
 import com.everis.listadecontatos.feature.listacontatos.adapter.ContatoAdapter
 import com.everis.listadecontatos.feature.listacontatos.model.ContatosVO
-import com.everis.listadecontatos.singleton.ContatoSingleton
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
 
@@ -56,21 +55,22 @@ class MainActivity : BaseActivity() {
     private fun onClickBuscar(){
         val busca = etBuscar.text.toString()
         progress.visibility = View.VISIBLE
-        Thread(Runnable {
+        Thread {
             Thread.sleep(1500)
             var listaFiltrada: List<ContatosVO> = mutableListOf()
             try {
-                listaFiltrada = ContatoApplication.instance.helperDB?.buscarContatos(busca) ?: mutableListOf()
-            }catch (ex: Exception){
+                listaFiltrada =
+                    ContatoApplication.instance.helperDB?.buscarContatos(busca) ?: mutableListOf()
+            } catch (ex: Exception) {
                 ex.printStackTrace()
             }
             runOnUiThread {
-                adapter = ContatoAdapter(this,listaFiltrada) {onClickItemRecyclerView(it)}
+                adapter = ContatoAdapter(this, listaFiltrada) { onClickItemRecyclerView(it) }
                 recyclerView.adapter = adapter
                 progress.visibility = View.GONE
-                Toast.makeText(this,"Buscando por $busca",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Buscando por $busca", Toast.LENGTH_SHORT).show()
             }
-        }).start()
+        }.start()
     }
 
 }
